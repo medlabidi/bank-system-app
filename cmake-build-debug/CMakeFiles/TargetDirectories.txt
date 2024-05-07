@@ -1,3 +1,0 @@
-C:/Users/WIN10X64EN/CLionProjects/bank-system-app/cmake-build-debug/CMakeFiles/bank_app.dir
-C:/Users/WIN10X64EN/CLionProjects/bank-system-app/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/WIN10X64EN/CLionProjects/bank-system-app/cmake-build-debug/CMakeFiles/rebuild_cache.dir

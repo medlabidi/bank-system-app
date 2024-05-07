@@ -25,6 +25,7 @@ void displayMainMenu() {
                 printf("please choose one of two options");
             break;
         }
+        break;
     }
 }
 
@@ -85,6 +86,6 @@ void login() {
     printf("password:\n");
     scanf("%s",user.password);
 
-    authenticate(user user);
+    authenticate(&user);
 
 }

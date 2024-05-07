@@ -2,15 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include "variables.h"
+#include "functions.h"
 
 
 
 
-int main(void) {
-
-    FILE* fptr=fopen("users.txt","w"); // create a users file to store users login data
-
-
-
+int main() {
+  displayMainMenu();
     return 0;
 }
