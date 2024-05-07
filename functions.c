@@ -2,6 +2,10 @@
 #include "variables.h"
 #include "main.c"
 
+void send_echo(char message[]) {
+    printf("%s\n",message);
+}
+
 void displayMainMenu() {
 
     int login_choice;
@@ -12,15 +16,10 @@ void displayMainMenu() {
     while (login_choice!=1||2) {
         switch (login_choice) {
             case 1:
-                printf("ddd");
-            //        signup();
+                send_echo("signup done!");            //        signup();
             break;
             case 2:
-                printf("username:\n");
-            scanf("%s",user->username);
-            printf("password:\n");
-            scanf("%s",user->password);
-            //           login();
+                login();
             break;
             default:
                 printf("please choose one of two options");
@@ -28,6 +27,7 @@ void displayMainMenu() {
         }
     }
 }
+
  int authenticate(struct user* user) {
 
     FILE *fp;
@@ -51,9 +51,15 @@ void displayMainMenu() {
         }
 
         // Compare the provided username and password with the stored username and password
-        if (strcmp(user->username, stored_user.username) == 0 && strcmp(user->password, stored_user.password) == 0) {
-            fclose(fp);
-            return 1; // Authentication succeeds
+        if (strcmp(user->username, stored_user.username) == 0) {
+            if (strcmp(user->password, stored_user.password) == 0) {
+                fclose(fp);
+                return 1; // Authentication succeeds
+            }
+            else if (strcmp(user->password, stored_user.password) !=0 ) {
+                printf("wrong password!");
+                return 0;
+            }
         }
     }
 
@@ -63,6 +69,22 @@ void displayMainMenu() {
     return 0;
 }
 
-void login(struct user user) {
+void login() {
+
+    FILE *fp;
+    // Open the file in append mode
+    fp = fopen("users.txt", "a");
+    if (fp == NULL) {
+        printf("Error opening file %s!\n","users");
+        return;
+    }
+
+    struct user user;
+    printf("username:\n");
+    scanf("%s",user.username);
+    printf("password:\n");
+    scanf("%s",user.password);
+
+    authenticate(user user);
 
 }

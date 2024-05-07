@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/WIN10X64EN/CLionProjects/bank_app/cmake-build-debug",
-		"source" : "C:/Users/WIN10X64EN/CLionProjects/bank_app"
+		"build" : "C:/Users/WIN10X64EN/CLionProjects/bank-system-app/cmake-build-debug",
+		"source" : "C:/Users/WIN10X64EN/CLionProjects/bank-system-app"
 	},
 	"version" : 
 	{
