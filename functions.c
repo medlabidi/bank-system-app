@@ -25,16 +25,15 @@ void testing_fetch() {
 }
 
 
-FILE* write_in_file(const char* filename) {
+FILE* write_in_file(const char* filename){
     FILE *fp;
-
     //open file in write mode
-    fp = fopen(filename, "r");
+    fp = fopen(filename, "w");
     if (fp == NULL) {
         printf("Error opening file!\n");
         return NULL; // Return NULL if file opening fails
-
-
+    }
+    return fp;
 }
 
 FILE* read_from_file(const char* filename) { //the parameter is declared as const char* to represent a string.
@@ -56,9 +55,9 @@ FILE* read_from_file(const char* filename) { //the parameter is declared as cons
     return fp;
 }
 
-void add_user(struct user user) {
+void add_user(struct user* user) {
     write_in_file("users.txt");
-    fprintf("%s %s\n",user.username,user.password);
+    fprintf("%s %s\n",user->username,user->password);
 }
 
 void displayMainMenu() {
@@ -89,7 +88,6 @@ void displayMainMenu() {
 
  int fetch_in_file(struct user* user) {
     send_echo("autheticating");
-
 
     char line[MAX_USERNAME_LENGTH + MAX_PASSWORD_LENGTH + 2]; // Maximum length of a line in the file
     struct user stored_user;// user to be taken for comparison from the file
@@ -144,12 +142,12 @@ void login() {
 }
 
 void signup() {
-    struct user new_user;
+    struct user* new_user= malloc(sizeof(struct user));
     printf("type your username:\n");
-    scanf("%s",new_user.username);
+    scanf("%s",new_user->username);
     printf("type your password:\n");
-    scanf("%s",new_user.password);
-    if(fetch_in_file(&new_user)==0){
+    scanf("%s",new_user->password);
+    if(fetch_in_file(new_user)==0){
         send_echo("adding user");
         add_user(new_user);
     }

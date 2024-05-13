@@ -11,6 +11,6 @@ int main() {
 
 
 
-    //displayMainMenu();
+    displayMainMenu();
     return 0;
 }
