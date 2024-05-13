@@ -13,7 +13,6 @@ void testing_fetch() {
     struct user *test = malloc(sizeof(struct user));
     if (test == NULL) {
         printf("Memory allocation failed!\n");
-        return 1;
     }
 
     strcpy(test->username, "a"); // Copy "a" into username
@@ -66,7 +65,7 @@ void displayMainMenu() {
     printf("welcome to the bank application, how can we help you?\n");
     printf("1: login\n2: create new account\n");
     scanf("%d",&login_choice);
-    struct user* user;
+   // struct user* user;
     while (login_choice!=1||2) {
         switch (login_choice) {
             case 1:
@@ -83,6 +82,7 @@ void displayMainMenu() {
             break;
         }
         break;
+        login_choice=0;
     }
 }
 
@@ -154,4 +154,5 @@ void signup() {
     else {
         printf("this username exists! try another one or login\n");
     }
+    free(new_user);
 }
