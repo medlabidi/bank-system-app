@@ -23,4 +23,6 @@ CMakeFiles/bank_app.dir/main.c.obj: \
  C:/Program\ Files/JetBrains/CLion\ 2024.1/bin/mingw/x86_64-w64-mingw32/include/errno.h \
  C:/Program\ Files/JetBrains/CLion\ 2024.1/bin/mingw/x86_64-w64-mingw32/include/string.h \
  C:/Program\ Files/JetBrains/CLion\ 2024.1/bin/mingw/x86_64-w64-mingw32/include/sec_api/string_s.h \
- C:\Users\WIN10X64EN\CLionProjects\bank-system-app\variables.h
+ C:\Users\WIN10X64EN\CLionProjects\bank-system-app\variables.h \
+ C:\Users\WIN10X64EN\CLionProjects\bank-system-app\functions.h \
+ C:\Users\WIN10X64EN\CLionProjects\bank-system-app\main.c

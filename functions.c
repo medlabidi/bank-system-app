@@ -6,19 +6,60 @@ void send_echo(char message[]) {
     printf("%s\n",message);
 }
 
-void add_user(struct user user) {
-    FILE *fp;
-
-    // Open the file for writing (this will create the file if it doesn't exist)
-    fp = fopen("users.txt", "w");
-    if (fp == NULL) {
-        printf("Error opening file!\n");
+void testing_fetch() {
+    /* this function is used to test fetch_in_file function by dynamically
+       allocating a variable of type"user" and assigning its content
+       with existing data in the fil and implement the fetch process */
+    struct user *test = malloc(sizeof(struct user));
+    if (test == NULL) {
+        printf("Memory allocation failed!\n");
+        return 1;
     }
-    fprintf("%s %s\n",user.username,user.password);
-    fclose(fp);
+
+    strcpy(test->username, "a"); // Copy "a" into username
+    strcpy(test->password, "b"); // Copy "b" into password
+
+    fetch_in_file(test);
+
+    free(test); // Free allocated memory
 }
 
 
+FILE* write_in_file(const char* filename) {
+    FILE *fp;
+
+    //open file in write mode
+    fp = fopen(filename, "r");
+    if (fp == NULL) {
+        printf("Error opening file!\n");
+        return NULL; // Return NULL if file opening fails
+
+
+}
+
+FILE* read_from_file(const char* filename) { //the parameter is declared as const char* to represent a string.
+    FILE *fp;
+
+    // Open the file for reading
+    fp = fopen(filename, "r");
+    if (fp == NULL) {
+        printf("Error opening file!\n");
+        return NULL; // Return NULL if file opening fails
+
+    }
+    // Check if the file is empty
+    if (fgetc(fp) == EOF) {
+        printf("File is empty!\n");
+        return NULL; // Return NULL if file opening fails
+    }
+    rewind(fp); // Reset file pointer to the beginning just after opening the file and checking if it's empty.
+    return fp;
+}
+
+void add_user(struct user user) {
+    write_in_file("users.txt");
+    fprintf("%s %s\n",user.username,user.password);
+}
 
 void displayMainMenu() {
 
@@ -31,9 +72,10 @@ void displayMainMenu() {
         switch (login_choice) {
             case 1:
                 login();
-                send_echo("login done!");            //        signup();
+                send_echo("login done!");
             break;
             case 2:
+                signup();
                 send_echo("signup done!");
                 ;
             break;
@@ -45,29 +87,16 @@ void displayMainMenu() {
     }
 }
 
- int authenticate(struct user* user) {
+ int fetch_in_file(struct user* user) {
     send_echo("autheticating");
-    FILE *fp;
+
+
     char line[MAX_USERNAME_LENGTH + MAX_PASSWORD_LENGTH + 2]; // Maximum length of a line in the file
     struct user stored_user;// user to be taken for comparison from the file
 
-    // Open the file for reading
-    fp = fopen("users.txt", "r");
-    send_echo("opening file..");
-    if (fp == NULL) {
-        printf("Error opening file!\n");
-        return 0; // Authentication fails
-    }
-
-    // Check if the file is empty
-    if (fgetc(fp) == EOF) {
-        printf("File is empty!\n");
-        fclose(fp);
-        return 0; // Return with success status
-    }
-
-    // Reset file pointer to the beginning
-    rewind(fp);
+    // Open the file for readin
+    send_echo("opening flie");
+    FILE* fp=read_from_file("users.txt");
 
     // Read each line from the file
     while (fgets(line, sizeof(line), fp)) { //sizeof operator in fgets is used to specify the maximum number of characters to read from the file stream.
@@ -101,21 +130,16 @@ void displayMainMenu() {
 
 void login() {
 
-    FILE *fp;
-    // Open the file in append mode
-    fp = fopen("users.txt", "a");
-    if (fp == NULL) {
-        printf("Error opening file %s!\n","users");
-        return;
-    }
-
     struct user user;
     printf("username:\n");
     scanf("%s",user.username);
     printf("password:\n");
     scanf("%s",user.password);
 
-    authenticate(&user);
+    if(fetch_in_file(&user)==1) {
+        send_echo("login succed");
+    }
+    else printf("failure login");
 
 }
 
@@ -125,7 +149,8 @@ void signup() {
     scanf("%s",new_user.username);
     printf("type your password:\n");
     scanf("%s",new_user.password);
-    if(authenticate(&new_user)==0){
+    if(fetch_in_file(&new_user)==0){
+        send_echo("adding user");
         add_user(new_user);
     }
     else {
