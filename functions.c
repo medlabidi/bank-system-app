@@ -55,8 +55,8 @@ FILE* read_from_file(const char* filename) { //the parameter is declared as cons
 }
 
 void add_user(struct user* user) {
-    write_in_file("users.txt");
-    fprintf("%s %s\n",user->username,user->password);
+    FILE *fp=write_in_file("users.txt");
+    fprintf(fp,"%s %s\n",user->username,user->password);
 }
 
 void displayMainMenu() {

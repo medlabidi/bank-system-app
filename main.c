@@ -10,7 +10,8 @@
 int main() {
 
 
-
-    displayMainMenu();
+    while() {
+        displayMainMenu();
+    }
     return 0;
 }
