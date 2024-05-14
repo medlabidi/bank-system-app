@@ -60,30 +60,27 @@ void add_user(struct user* user) {
 }
 
 void displayMainMenu() {
-
     int login_choice;
-    printf("welcome to the bank application, how can we help you?\n");
-    printf("1: login\n2: create new account\n");
-    scanf("%d",&login_choice);
-   // struct user* user;
-    while (login_choice!=1||2) {
-        switch (login_choice) {
-            case 1:
-                login();
-                send_echo("login done!");
-            break;
-            case 2:
-                signup();
-                send_echo("signup done!");
-                ;
-            break;
-            default:
-                printf("please choose one of two options");
-            break;
-        }
-        break;
-        login_choice=0;
+    printf("Welcome to the bank application. How can we help you?\n");
+    printf("1: Login\n2: Create new account\n");
+    scanf("%d", &login_choice);
+
+    // Continue displaying the main menu until a valid choice is made
+    while (login_choice != 1 && login_choice != 2) {
+        printf("Please choose one of the options (1 or 2): ");
+        scanf("%d", &login_choice);
     }
+
+    // Process the chosen option
+    switch (login_choice) {
+        case 1:
+            login();
+        break;
+        case 2:
+            signup();
+        break;
+    }
+    login_choice=0;
 }
 
  int fetch_in_file(struct user* user) {
@@ -110,11 +107,11 @@ void displayMainMenu() {
         if (strcmp(user->username, stored_user.username) == 0) {
             if (strcmp(user->password, stored_user.password) == 0) {
                 fclose(fp);
-                send_echo("user found!");
+                send_echo("user found!\n");
                 return 1; // Authentication succeeds
             }
             else if (strcmp(user->password, stored_user.password) !=0 ) {
-                printf("wrong password!");
+                printf("wrong password!\n");
                 return 0;
             }
         }
@@ -137,7 +134,7 @@ void login() {
     if(fetch_in_file(&user)==1) {
         send_echo("login succed");
     }
-    else printf("failure login");
+    else printf("failure login\n");
 
 }
 
