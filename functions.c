@@ -27,7 +27,7 @@ void testing_fetch() {
 FILE* write_in_file(const char* filename){
     FILE *fp;
     //open file in write mode
-    fp = fopen(filename, "w");
+    fp = fopen(filename, "a");
     if (fp == NULL) {
         printf("Error opening file!\n");
         return NULL; // Return NULL if file opening fails
@@ -55,32 +55,40 @@ FILE* read_from_file(const char* filename) { //the parameter is declared as cons
 }
 
 void add_user(struct user* user) {
-    FILE *fp=write_in_file("users.txt");
-    fprintf(fp,"%s %s\n",user->username,user->password);
+    FILE *fp = write_in_file("users.txt");
+    if (fp != NULL) {
+        fprintf(fp, "%s %s\n", user->username, user->password);
+        fflush(fp); // Flush output buffer to ensure data is written immediately
+        fclose(fp); // Close the file
+        send_echo("User added successfully");
+    } else {
+        send_echo("Failed to open file for writing");
+    }
 }
 
 void displayMainMenu() {
     int login_choice;
     printf("Welcome to the bank application. How can we help you?\n");
-    printf("1: Login\n2: Create new account\n");
-    scanf("%d", &login_choice);
-
     // Continue displaying the main menu until a valid choice is made
-    while (login_choice != 1 && login_choice != 2) {
-        printf("Please choose one of the options (1 or 2): ");
+    do {
+        printf("1: Login\n2: Create new account\n");
         scanf("%d", &login_choice);
-    }
 
-    // Process the chosen option
-    switch (login_choice) {
-        case 1:
-            login();
-        break;
-        case 2:
-            signup();
-        break;
-    }
-    login_choice=0;
+        // Process the chosen option
+        switch (login_choice) {
+            case 1:
+                login();
+            break;
+            case 2:
+                signup();
+            // Reload file content after creating a new account
+            send_echo("Reloading file content...");
+            break;
+            default:
+                printf("Please choose one of the options (1 or 2).\n");
+            break;
+        }
+    } while (login_choice != 1 && login_choice != 2);
 }
 
  int fetch_in_file(struct user* user) {
@@ -105,9 +113,9 @@ void displayMainMenu() {
 
         // Compare the provided username and password with the stored username and password
         if (strcmp(user->username, stored_user.username) == 0) {
+            send_echo("user found!\n");
             if (strcmp(user->password, stored_user.password) == 0) {
                 fclose(fp);
-                send_echo("user found!\n");
                 return 1; // Authentication succeeds
             }
             else if (strcmp(user->password, stored_user.password) !=0 ) {
