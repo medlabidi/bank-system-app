@@ -3,16 +3,20 @@
 #include "variables.h"
 #include <stdio.h>
 
-
 FILE* write_in_file(const char* filename);
 FILE* read_from_file(const char* filename);
+
+//generate a unique ID based on the current timestamp and a random number.
+char* generate_ID();
+
+void add_user();
 
 void testing_fetch();
 
 /*When the program starts, it displays a main menu with two options: "Login" and "Signup".*/
 void displayMainMenu();
 
-void login();
+int login();
 void signup();
 
 /* Authenticate the user's login attempt by comparing

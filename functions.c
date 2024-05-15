@@ -1,6 +1,6 @@
 #include "functions.h"
-#include "variables.h"
 #include "main.c"
+#include <time.h>
 
 void send_echo(char message[]) {
     printf("%s\n",message);
@@ -22,7 +22,6 @@ void testing_fetch() {
 
     free(test); // Free allocated memory
 }
-
 
 FILE* write_in_file(const char* filename){
     FILE *fp;
@@ -54,10 +53,35 @@ FILE* read_from_file(const char* filename) { //the parameter is declared as cons
     return fp;
 }
 
+char* generate_ID() {
+
+    //generate timestamp-based unique ID
+    time_t current_time;
+    time(&current_time);
+    char* time_stamp=malloc(MAX_ID_LENGTH*sizeof(char));
+    sprintf(time_stamp,"%ld",current_time);
+
+    //generate a random number
+    char* random_str = malloc(MAX_ID_LENGTH * sizeof(char));
+    sprintf(random_str, "%d", rand() % 1000); // Adjust range as needed
+
+    //concatenate timestamp-based unique id with the random number to create unique ID
+    char* unique_id=malloc(MAX_ID_LENGTH*sizeof(char));
+    strcpy(unique_id,time_stamp);
+    strcat(unique_id,random_str);
+
+    // Free allocated memory for temporary strings
+    free(time_stamp);
+    free(random_str);
+
+    return unique_id;
+}
+
 void add_user(struct user* user) {
     FILE *fp = write_in_file("users.txt");
     if (fp != NULL) {
-        fprintf(fp, "%s %s\n", user->username, user->password);
+        strcpy(user->id, generate_ID());
+        fprintf(fp, "%s %s %s\n",user->id, user->username, user->password);
         fflush(fp); // Flush output buffer to ensure data is written immediately
         fclose(fp); // Close the file
         send_echo("User added successfully");
@@ -102,10 +126,10 @@ void displayMainMenu() {
     FILE* fp=read_from_file("users.txt");
 
     // Read each line from the file
-    while (fgets(line, sizeof(line), fp)) { //sizeof operator in fgets is used to specify the maximum number of characters to read from the file stream.
+    while (fgets(line, sizeof(line), fp)) {
         send_echo("fetching users..");
-        // Extract username and password from the line
-        if (sscanf(line, "%s %s", stored_user.username, stored_user.password) != 2) {
+        // Extract username, password, and ID from the line
+        if (sscanf(line, "%d %s %s", &stored_user.id, stored_user.username, stored_user.password) != 3) {
             printf("Error reading user data from file!\n");
             fclose(fp);
             return 0; // Authentication fails
@@ -113,14 +137,15 @@ void displayMainMenu() {
 
         // Compare the provided username and password with the stored username and password
         if (strcmp(user->username, stored_user.username) == 0) {
-            send_echo("user found!\n");
+            send_echo("user found!");
             if (strcmp(user->password, stored_user.password) == 0) {
+                send_echo("password matched!");
                 fclose(fp);
-                return 1; // Authentication succeeds
-            }
-            else if (strcmp(user->password, stored_user.password) !=0 ) {
+                return stored_user.id; // Authentication succeeds
+            } else {
                 printf("wrong password!\n");
-                return 0;
+                fclose(fp);
+                return 0; // Authentication fails
             }
         }
     }
@@ -131,19 +156,21 @@ void displayMainMenu() {
     return 0;
 }
 
-void login() {
-
+int login() {
+    int user_id=0;
     struct user user;
     printf("username:\n");
     scanf("%s",user.username);
     printf("password:\n");
     scanf("%s",user.password);
 
-    if(fetch_in_file(&user)==1) {
+    user_id=fetch_in_file(&user);
+    if(user_id!=0) {
         send_echo("login succed");
+        printf("%d\n",user_id);
     }
     else printf("failure login\n");
-
+    return user_id;
 }
 
 void signup() {
