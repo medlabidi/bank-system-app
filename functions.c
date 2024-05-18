@@ -1,7 +1,7 @@
 #include "functions.h"
 #include "main.c"
 #include <time.h>
-
+#include "flags.h"
 void send_echo(char message[]) {
     printf("%s\n",message);
 }
@@ -115,21 +115,21 @@ void displayMainMenu() {
     } while (login_choice != 1 && login_choice != 2);
 }
 
- int fetch_in_file(struct user* user) {
-    send_echo("autheticating");
+ char* fetch_in_file(struct user* user) {
+    //send_echo("autheticating");
 
     char line[MAX_USERNAME_LENGTH + MAX_PASSWORD_LENGTH + 2]; // Maximum length of a line in the file
     struct user stored_user;// user to be taken for comparison from the file
 
     // Open the file for readin
-    send_echo("opening flie");
+    //send_echo("opening flie");
     FILE* fp=read_from_file("users.txt");
 
     // Read each line from the file
     while (fgets(line, sizeof(line), fp)) {
-        send_echo("fetching users..");
+        //send_echo("fetching users..");
         // Extract username, password, and ID from the line
-        if (sscanf(line, "%d %s %s", &stored_user.id, stored_user.username, stored_user.password) != 3) {
+        if (sscanf(line, "%s %s %s", &stored_user.id, stored_user.username, stored_user.password) != 3) {
             printf("Error reading user data from file!\n");
             fclose(fp);
             return 0; // Authentication fails
@@ -137,10 +137,11 @@ void displayMainMenu() {
 
         // Compare the provided username and password with the stored username and password
         if (strcmp(user->username, stored_user.username) == 0) {
-            send_echo("user found!");
+            //send_echo("user found!");
             if (strcmp(user->password, stored_user.password) == 0) {
-                send_echo("password matched!");
+                //send_echo("password matched!");
                 fclose(fp);
+                //printf("%s %s %s correct\n",stored_user.username, stored_user.password, stored_user.id);
                 return stored_user.id; // Authentication succeeds
             } else {
                 printf("wrong password!\n");
@@ -156,8 +157,8 @@ void displayMainMenu() {
     return 0;
 }
 
-int login() {
-    int user_id=0;
+char* login() {
+    char *user_id;
     struct user user;
     printf("username:\n");
     scanf("%s",user.username);
@@ -165,9 +166,9 @@ int login() {
     scanf("%s",user.password);
 
     user_id=fetch_in_file(&user);
-    if(user_id!=0) {
+    if(user_id!="E0F") {
         send_echo("login succed");
-        printf("%d\n",user_id);
+        //loged_in=1;
     }
     else printf("failure login\n");
     return user_id;
@@ -179,7 +180,7 @@ void signup() {
     scanf("%s",new_user->username);
     printf("type your password:\n");
     scanf("%s",new_user->password);
-    if(fetch_in_file(new_user)==0){
+    if(fetch_in_file(new_user)=="E0F"){
         send_echo("adding user");
         add_user(new_user);
     }

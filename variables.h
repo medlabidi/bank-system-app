@@ -6,10 +6,14 @@
 #define MAX_LINE_LENGTH 256
 #define MAX_ID_LENGTH 10
 
+struct flag {
+    int loged_in;
+};
+
 struct user {
     char username[MAX_USERNAME_LENGTH];
     char password[MAX_PASSWORD_LENGTH];
-    int id[MAX_ID_LENGTH];
+    char id[MAX_ID_LENGTH];
 };
 
 #endif /* USER_H */

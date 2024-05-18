@@ -80,6 +80,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="C:/Users/WIN10X64EN/CLionProjects/bank-system-app/flags.h">
+			<Option target="bank_app"/>
+		</Unit>
 		<Unit filename="C:/Users/WIN10X64EN/CLionProjects/bank-system-app/functions.c">
 			<Option target="bank_app"/>
 		</Unit>

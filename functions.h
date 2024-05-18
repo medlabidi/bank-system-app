@@ -16,12 +16,12 @@ void testing_fetch();
 /*When the program starts, it displays a main menu with two options: "Login" and "Signup".*/
 void displayMainMenu();
 
-int login();
+char* login();
 void signup();
 
 /* Authenticate the user's login attempt by comparing
  the entered username and password with the data stored in the file.*/
-int fetch_in_file(struct user* user);
+char* fetch_in_file(struct user* user);
 
 /*testing steps by printing a message in choice*/
 void send_echo(char message[]);
