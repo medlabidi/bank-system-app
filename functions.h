@@ -3,7 +3,6 @@
 #include "variables.h"
 #include "flags.h"
 #include <stdio.h>
-#include <time.h>
 
 /*testing functions declarations*/
 

@@ -1,11 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <time.h>
 #include "flags.h"
-#include "variables.h"
 #include "functions.h"
-#include "flags.h"
 
 
 
