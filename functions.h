@@ -1,15 +1,31 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 #include "variables.h"
+#include "flags.h"
 #include <stdio.h>
+#include <time.h>
+
+/*testing functions declarations*/
+
+/* Authenticate the user's login attempt by comparing
+ the entered username and password with the data stored in the file.*/
+char* fetch_in_file(struct user* user);
+void send_echo(char message[]);
 
 FILE* write_in_file(const char* filename);
 FILE* read_from_file(const char* filename);
+
+/*flags functions declarations*/
+
+void set_flag(int *flags, UserFlags flag);
+void clear_flag(int *flags, UserFlags flag);
+int is_flag_set(int flags, UserFlags flag);
 
 //generate a unique ID based on the current timestamp and a random number.
 char* generate_ID();
 
 void add_user();
+/*testing functions declarations*/
 
 void testing_fetch();
 
@@ -18,15 +34,5 @@ void displayMainMenu();
 
 char* login();
 void signup();
-
-/* Authenticate the user's login attempt by comparing
- the entered username and password with the data stored in the file.*/
-char* fetch_in_file(struct user* user);
-
-/*testing steps by printing a message in choice*/
-void send_echo(char message[]);
-
-
-
 
 #endif /*FUNCTION_H*/

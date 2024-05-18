@@ -1,7 +1,21 @@
 #include "functions.h"
 #include "main.c"
-#include <time.h>
-#include "flags.h"
+
+/*flags functions*/
+
+void set_flag(int* flags, UserFlags flag) {
+    *flags |= flag;
+}
+
+void clear_flag(int *flags, UserFlags flag) {
+    *flags &= ~flag;
+}
+
+int is_flag_set(int flags, UserFlags flag) {
+    return (flags & flag) != 0;
+}
+
+/*testing functions*/
 void send_echo(char message[]) {
     printf("%s\n",message);
 }
@@ -116,7 +130,7 @@ void displayMainMenu() {
 }
 
  char* fetch_in_file(struct user* user) {
-    //send_echo("autheticating");
+    send_echo("autheticating");
 
     char line[MAX_USERNAME_LENGTH + MAX_PASSWORD_LENGTH + 2]; // Maximum length of a line in the file
     struct user stored_user;// user to be taken for comparison from the file
@@ -132,7 +146,7 @@ void displayMainMenu() {
         if (sscanf(line, "%s %s %s", &stored_user.id, stored_user.username, stored_user.password) != 3) {
             printf("Error reading user data from file!\n");
             fclose(fp);
-            return 0; // Authentication fails
+            return "E0F"; // Authentication fails
         }
 
         // Compare the provided username and password with the stored username and password
@@ -146,7 +160,7 @@ void displayMainMenu() {
             } else {
                 printf("wrong password!\n");
                 fclose(fp);
-                return 0; // Authentication fails
+                return "E0F"; // Authentication fails
             }
         }
     }
@@ -154,7 +168,9 @@ void displayMainMenu() {
     fclose(fp);
 
     // If the loop completes without finding a match, authentication fails
-    return 0;
+    // If the loop completes without finding a match, authentication fails
+    send_echo("user not found!");
+    return "E0F";
 }
 
 char* login() {
@@ -167,11 +183,12 @@ char* login() {
 
     user_id=fetch_in_file(&user);
     if(user_id!="E0F") {
+        set_flag(&user_flags,LOG_IN_AS_USER);
         send_echo("login succed");
-        //loged_in=1;
+        return user_id;
     }
     else printf("failure login\n");
-    return user_id;
+    return "E0F";
 }
 
 void signup() {
