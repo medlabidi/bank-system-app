@@ -17,9 +17,9 @@ FILE* read_from_file(const char* filename);
 
 /*flags functions declarations*/
 
-void set_flag(int *flags, UserFlags flag);
-void clear_flag(int *flags, UserFlags flag);
-int is_flag_set(int flags, UserFlags flag);
+void set_flag(int *flags, logintypes flag);
+void clear_flag(int *flags, logintypes flag);
+int is_flag_set(int flags, logintypes flag);
 
 //generate a unique ID based on the current timestamp and a random number.
 char* generate_ID();

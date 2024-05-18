@@ -12,7 +12,7 @@
 
 int main() {
 
-    while(is_flag_set(user_flags,LOG_IN_AS_USER)==0){
+    while(is_flag_set(login_types,LOG_IN_AS_USER)==0){
         displayMainMenu();
     }
     return 0;
