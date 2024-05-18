@@ -200,6 +200,7 @@ void signup() {
     if(fetch_in_file(new_user)=="E0F"){
         send_echo("adding user");
         add_user(new_user);
+        set_flag(&signup_flag,SIGNUP_DONE);
     }
     else {
         printf("this username exists! try another one or login\n");
