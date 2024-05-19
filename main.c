@@ -10,7 +10,7 @@
 
 int main() {
 
-    while(is_flag_set(login_types,LOG_IN_AS_USER)==0 || is_flag_set(signup_flag,SIGNUP_DONE) ){
+    while(!is_flag_set(login_types,LOG_IN_AS_USER) && !is_flag_set(signup_flag,SIGNUP_DONE) ){
         displayMainMenu();
     }
     return 0;

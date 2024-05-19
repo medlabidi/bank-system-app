@@ -98,7 +98,7 @@ void add_user(struct user* user) {
         fprintf(fp, "%s %s %s\n",user->id, user->username, user->password);
         fflush(fp); // Flush output buffer to ensure data is written immediately
         fclose(fp); // Close the file
-        send_echo("User added successfully");
+        //send_echo("User added successfully");
     } else {
         send_echo("Failed to open file for writing");
     }
@@ -198,7 +198,7 @@ void signup() {
     printf("type your password:\n");
     scanf("%s",new_user->password);
     if(fetch_in_file(new_user)=="E0F"){
-        send_echo("adding user");
+        //send_echo("adding user");
         add_user(new_user);
         set_flag(&signup_flag,SIGNUP_DONE);
     }
