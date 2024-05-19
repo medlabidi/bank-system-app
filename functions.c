@@ -1,7 +1,7 @@
 #include "functions.h"
 #include "main.c"
 
-/*flags functions*/
+/* Flags functions */
 
 void set_flag(int* flags, logintypes flag) {
     *flags |= flag;
@@ -15,76 +15,64 @@ int is_flag_set(int flags, logintypes flag) {
     return (flags & flag) != 0;
 }
 
-/*testing functions*/
+/* Testing functions */
+
 void send_echo(char message[]) {
-    printf("%s\n",message);
+    printf("%s\n", message);
 }
 
 void testing_fetch() {
-    /* this function is used to test fetch_in_file function by dynamically
-       allocating a variable of type"user" and assigning its content
-       with existing data in the fil and implement the fetch process */
     struct user *test = malloc(sizeof(struct user));
     if (test == NULL) {
         printf("Memory allocation failed!\n");
+        return;
     }
 
-    strcpy(test->username, "a"); // Copy "a" into username
-    strcpy(test->password, "b"); // Copy "b" into password
+    strcpy(test->username, "a");
+    strcpy(test->password, "b");
 
     fetch_in_file(test);
 
-    free(test); // Free allocated memory
+    free(test);
 }
 
-FILE* write_in_file(const char* filename){
-    FILE *fp;
-    //open file in write mode
-    fp = fopen(filename, "a");
+FILE* write_in_file(const char* filename) {
+    FILE *fp = fopen(filename, "a");
     if (fp == NULL) {
         printf("Error opening file!\n");
-        return NULL; // Return NULL if file opening fails
+        return NULL;
     }
     return fp;
 }
 
-FILE* read_from_file(const char* filename) { //the parameter is declared as const char* to represent a string.
-    FILE *fp;
-
-    // Open the file for reading
-    fp = fopen(filename, "r");
+FILE* read_from_file(const char* filename) {
+    FILE *fp = fopen(filename, "r");
     if (fp == NULL) {
         printf("Error opening file!\n");
-        return NULL; // Return NULL if file opening fails
-
+        return NULL;
     }
-    // Check if the file is empty
     if (fgetc(fp) == EOF) {
         printf("File is empty!\n");
-        return NULL; // Return NULL if file opening fails
+        fclose(fp);
+        return NULL;
     }
-    rewind(fp); // Reset file pointer to the beginning just after opening the file and checking if it's empty.
+    rewind(fp);
     return fp;
 }
 
 char* generate_ID() {
-
-    //generate timestamp-based unique ID
     time_t current_time;
     time(&current_time);
-    char* time_stamp=malloc(MAX_ID_LENGTH*sizeof(char));
-    sprintf(time_stamp,"%ld",current_time);
+    char* time_stamp = malloc(MAX_ID_LENGTH * sizeof(char));
+    sprintf(time_stamp, "%ld", current_time);
 
-    //generate a random number
     char* random_str = malloc(MAX_ID_LENGTH * sizeof(char));
-    sprintf(random_str, "%d", rand() % 1000); // Adjust range as needed
+    sprintf(random_str, "%d", rand() % 1000);
 
-    //concatenate timestamp-based unique id with the random number to create unique ID
-    char* unique_id=malloc(MAX_ID_LENGTH*sizeof(char));
-    strcpy(unique_id,time_stamp);
-    strcat(unique_id,random_str);
+    char* unique_id = malloc(MAX_ID_LENGTH * sizeof(char));
+    strcpy(unique_id, time_stamp);
+    strcat(unique_id, random_str);
 
-    // Free allocated memory for temporary strings
     free(time_stamp);
     free(random_str);
 
@@ -95,10 +83,9 @@ void add_user(struct user* user) {
     FILE *fp = write_in_file("users.txt");
     if (fp != NULL) {
         strcpy(user->id, generate_ID());
-        fprintf(fp, "%s %s %s\n",user->id, user->username, user->password);
-        fflush(fp); // Flush output buffer to ensure data is written immediately
-        fclose(fp); // Close the file
-        //send_echo("User added successfully");
+        fprintf(fp, "%s %s %s\n", user->id, user->username, user->password);
+        fflush(fp);
+        fclose(fp);
     } else {
         send_echo("Failed to open file for writing");
     }
@@ -106,104 +93,127 @@ void add_user(struct user* user) {
 
 void displayMainMenu() {
     int login_choice;
+    struct user *user;
     printf("Welcome to the bank application. How can we help you?\n");
-    // Continue displaying the main menu until a valid choice is made
     do {
         printf("1: Login\n2: Create new account\n");
         scanf("%d", &login_choice);
 
-        // Process the chosen option
         switch (login_choice) {
             case 1:
-                login();
-            break;
+                user = login();
+                break;
             case 2:
                 signup();
-            // Reload file content after creating a new account
-            send_echo("Reloading file content...");
-            break;
+                send_echo("Reloading file content...");
+                break;
             default:
                 printf("Please choose one of the options (1 or 2).\n");
-            break;
+                break;
         }
     } while (login_choice != 1 && login_choice != 2);
 }
 
- char* fetch_in_file(struct user* user) {
-    send_echo("autheticating");
+void DisplayUserOptionsMenu() {
+    int user_options_choice;
+    printf("Welcome to the user panel! How can we help you?\n");
+    do {
+        printf("1: Check balance\n2: Transfer money\n3: Deposit\n4: Withdraw\n5: Logout\n");
+        scanf("%d", &user_options_choice);
 
-    char line[MAX_USERNAME_LENGTH + MAX_PASSWORD_LENGTH + 2]; // Maximum length of a line in the file
-    struct user stored_user;// user to be taken for comparison from the file
+        switch (user_options_choice) {
+            case 1:
+                send_echo("Check balance");
+                break;
+            case 2:
+                send_echo("Transfer money");
+                break;
+            case 3:
+                send_echo("Deposit");
+                break;
+            case 4:
+                send_echo("Withdraw");
+                break;
+            case 5:
+                send_echo("Logout");
+                break;
+            default:
+                printf("Please choose one of the options.\n");
+                break;
+        }
+    } while (user_options_choice != 5);
+}
 
-    // Open the file for readin
-    //send_echo("opening flie");
-    FILE* fp=read_from_file("users.txt");
+struct user* fetch_in_file(struct user* user) {
+    char line[MAX_USERNAME_LENGTH + MAX_PASSWORD_LENGTH + 2];
+    struct user *stored_user = malloc(sizeof(struct user));
+    if (stored_user == NULL) {
+        printf("Memory allocation failed!\n");
+        return NULL;
+    }
 
-    // Read each line from the file
+    FILE* fp = read_from_file("users.txt");
+    if (fp == NULL) {
+        free(stored_user);
+        return NULL;
+    }
+
     while (fgets(line, sizeof(line), fp)) {
-        //send_echo("fetching users..");
-        // Extract username, password, and ID from the line
-        if (sscanf(line, "%s %s %s", &stored_user.id, stored_user.username, stored_user.password) != 3) {
+        if (sscanf(line, "%s %s %s", stored_user->id, stored_user->username, stored_user->password) != 3) {
             printf("Error reading user data from file!\n");
             fclose(fp);
-            return "E0F"; // Authentication fails
+            free(stored_user);
+            return NULL;
         }
 
-        // Compare the provided username and password with the stored username and password
-        if (strcmp(user->username, stored_user.username) == 0) {
-            //send_echo("user found!");
-            if (strcmp(user->password, stored_user.password) == 0) {
-                //send_echo("password matched!");
+        if (strcmp(user->username, stored_user->username) == 0) {
+            if (strcmp(user->password, stored_user->password) == 0) {
                 fclose(fp);
-                //printf("%s %s %s correct\n",stored_user.username, stored_user.password, stored_user.id);
-                return stored_user.id; // Authentication succeeds
+                return stored_user;
             } else {
-                printf("wrong password!\n");
+                printf("Wrong password!\n");
                 fclose(fp);
-                return "E0F"; // Authentication fails
+                free(stored_user);
+                return NULL;
             }
         }
     }
 
     fclose(fp);
-
-    // If the loop completes without finding a match, authentication fails
-    // If the loop completes without finding a match, authentication fails
-    send_echo("user not found!");
-    return "E0F";
+    send_echo("User not found!");
+    free(stored_user);
+    return NULL;
 }
 
-char* login() {
-    char *user_id;
-    struct user user;
-    printf("username:\n");
-    scanf("%s",user.username);
-    printf("password:\n");
-    scanf("%s",user.password);
+struct user* login() {
+    struct user *user;
+    struct user loginuser;
+    printf("Username:\n");
+    scanf("%s", loginuser.username);
+    printf("Password:\n");
+    scanf("%s", loginuser.password);
 
-    user_id=fetch_in_file(&user);
-    if(user_id!="E0F") {
-        set_flag(&login_types,LOG_IN_AS_USER);
-        send_echo("login succed");
-        return user_id;
+    user = fetch_in_file(&loginuser);
+    if (user != NULL) {
+        set_flag(&login_types, LOG_IN_AS_USER);
+        send_echo("Login succeeded");
+        return user;
     }
-    else printf("failure login\n");
-    return "E0F";
+    printf("Login failed\n");
+    return NULL;
 }
 
 void signup() {
-    struct user* new_user= malloc(sizeof(struct user));
-    printf("type your username:\n");
-    scanf("%s",new_user->username);
-    printf("type your password:\n");
-    scanf("%s",new_user->password);
-    if(fetch_in_file(new_user)=="E0F"){
-        //send_echo("adding user");
+    struct user* new_user = malloc(sizeof(struct user));
+    printf("Type your username:\n");
+    scanf("%s", new_user->username);
+    printf("Type your password:\n");
+    scanf("%s", new_user->password);
+    if (fetch_in_file(new_user) == NULL) {
         add_user(new_user);
-        set_flag(&signup_flag,SIGNUP_DONE);
-    }
-    else {
-        printf("this username exists! try another one or login\n");
+        set_flag(&signup_flag, SIGNUP_DONE);
+    } else {
+        printf("This username exists! Try another one or login.\n");
     }
     free(new_user);
 }

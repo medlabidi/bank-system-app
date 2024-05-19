@@ -8,7 +8,7 @@
 
 /* Authenticate the user's login attempt by comparing
  the entered username and password with the data stored in the file.*/
-char* fetch_in_file(struct user* user);
+struct user* fetch_in_file(struct user* user);
 void send_echo(char message[]);
 
 FILE* write_in_file(const char* filename);
@@ -28,10 +28,14 @@ void add_user();
 
 void testing_fetch();
 
+struct user* login();
+void signup();
+
 /*When the program starts, it displays a main menu with two options: "Login" and "Signup".*/
 void displayMainMenu();
 
-char* login();
-void signup();
+/*When login is done, it displays a options menu.*/
+void DisplayUserOptionsMenu();
+
 
 #endif /*FUNCTION_H*/
