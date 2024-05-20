@@ -29,13 +29,20 @@ void add_user();
 void testing_fetch();
 
 struct user* login();
-void signup();
+struct user* signup();
 
 /*When the program starts, it displays a main menu with two options: "Login" and "Signup".*/
-void displayMainMenu();
+struct user* displayMainMenu();
 
 /*When login is done, it displays a options menu.*/
 void DisplayUserOptionsMenu();
 
+/*user functions*/
+
+void CheckBalance(struct user* user);
+void TransferMoney(struct user* sender,struct user* receiver,int amount);
+void deposit(struct user*,int amount);
+void withdraw(struct user*,int amount);
+void logout();
 
 #endif /*FUNCTION_H*/

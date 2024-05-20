@@ -10,6 +10,7 @@ struct user {
     char username[MAX_USERNAME_LENGTH];
     char password[MAX_PASSWORD_LENGTH];
     char id[MAX_ID_LENGTH];
+    int balance;
 };
 
 #endif /* USER_H */

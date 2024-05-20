@@ -21,7 +21,7 @@ void send_echo(char message[]) {
     printf("%s\n", message);
 }
 
-void testing_fetch() {
+/*void testing_fetch() {
     struct user *test = malloc(sizeof(struct user));
     if (test == NULL) {
         printf("Memory allocation failed!\n");
@@ -34,7 +34,7 @@ void testing_fetch() {
     fetch_in_file(test);
 
     free(test);
-}
+}*/
 
 FILE* write_in_file(const char* filename) {
     FILE *fp = fopen(filename, "a");
@@ -83,7 +83,8 @@ void add_user(struct user* user) {
     FILE *fp = write_in_file("users.txt");
     if (fp != NULL) {
         strcpy(user->id, generate_ID());
-        fprintf(fp, "%s %s %s\n", user->id, user->username, user->password);
+        user->balance=0;
+        fprintf(fp, "%s %s %s %d\n", user->id, user->username, user->password, user->balance);
         fflush(fp);
         fclose(fp);
     } else {
@@ -91,9 +92,9 @@ void add_user(struct user* user) {
     }
 }
 
-void displayMainMenu() {
+struct user* displayMainMenu() {
     int login_choice;
-    struct user *user;
+    struct user *user=NULL;
     printf("Welcome to the bank application. How can we help you?\n");
     do {
         printf("1: Login\n2: Create new account\n");
@@ -101,10 +102,10 @@ void displayMainMenu() {
 
         switch (login_choice) {
             case 1:
-                user = login();
+                user=login();
                 break;
             case 2:
-                signup();
+                user=signup();
                 send_echo("Reloading file content...");
                 break;
             default:
@@ -112,9 +113,10 @@ void displayMainMenu() {
                 break;
         }
     } while (login_choice != 1 && login_choice != 2);
+    return user;
 }
 
-void DisplayUserOptionsMenu() {
+void DisplayUserOptionsMenu(struct user* user) {
     int user_options_choice;
     printf("Welcome to the user panel! How can we help you?\n");
     do {
@@ -124,6 +126,7 @@ void DisplayUserOptionsMenu() {
         switch (user_options_choice) {
             case 1:
                 send_echo("Check balance");
+                CheckBalance(user);
                 break;
             case 2:
                 send_echo("Transfer money");
@@ -144,8 +147,12 @@ void DisplayUserOptionsMenu() {
     } while (user_options_choice != 5);
 }
 
+void CheckBalance(struct user* user) {
+    printf("your cash balance is %d\n",user->balance);
+}
+
 struct user* fetch_in_file(struct user* user) {
-    char line[MAX_USERNAME_LENGTH + MAX_PASSWORD_LENGTH + 2];
+    char line[MAX_USERNAME_LENGTH + MAX_PASSWORD_LENGTH + 50];
     struct user *stored_user = malloc(sizeof(struct user));
     if (stored_user == NULL) {
         printf("Memory allocation failed!\n");
@@ -159,7 +166,7 @@ struct user* fetch_in_file(struct user* user) {
     }
 
     while (fgets(line, sizeof(line), fp)) {
-        if (sscanf(line, "%s %s %s", stored_user->id, stored_user->username, stored_user->password) != 3) {
+        if (sscanf(line, "%s %s %s %d", stored_user->id, stored_user->username, stored_user->password, &(stored_user->balance)) != 4) {
             printf("Error reading user data from file!\n");
             fclose(fp);
             free(stored_user);
@@ -203,7 +210,7 @@ struct user* login() {
     return NULL;
 }
 
-void signup() {
+struct user* signup() {
     struct user* new_user = malloc(sizeof(struct user));
     printf("Type your username:\n");
     scanf("%s", new_user->username);
@@ -212,8 +219,10 @@ void signup() {
     if (fetch_in_file(new_user) == NULL) {
         add_user(new_user);
         set_flag(&signup_flag, SIGNUP_DONE);
-    } else {
+        return new_user;
+    }
+    else {
         printf("This username exists! Try another one or login.\n");
     }
-    free(new_user);
+    //free(new_user);
 }
