@@ -41,7 +41,7 @@ void DisplayUserOptionsMenu();
 
 void CheckBalance(struct user* user);
 void TransferMoney(struct user* sender,struct user* receiver,int amount);
-void deposit(struct user*,int amount);
+void deposit(struct user*);
 void withdraw(struct user*,int amount);
 void logout();
 

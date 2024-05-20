@@ -125,7 +125,7 @@ void DisplayUserOptionsMenu(struct user* user) {
 
         switch (user_options_choice) {
             case 1:
-                send_echo("Check balance");
+                //send_echo("Check balance");
                 CheckBalance(user);
                 break;
             case 2:
@@ -133,6 +133,7 @@ void DisplayUserOptionsMenu(struct user* user) {
                 break;
             case 3:
                 send_echo("Deposit");
+                deposit(user);
                 break;
             case 4:
                 send_echo("Withdraw");
@@ -150,6 +151,52 @@ void DisplayUserOptionsMenu(struct user* user) {
 void CheckBalance(struct user* user) {
     printf("your cash balance is %d\n",user->balance);
 }
+
+void deposit(struct user* user) {
+    int amount;
+    printf("enter the amount you want to deposit:\n");
+    scanf("%d",&amount);
+    FILE* fp=fopen("users.txt","r+");
+    if(fp==NULL) {
+        printf("error openig file!");
+        return;
+    }
+
+    char line[MAX_LINE_LENGTH];
+    char temp_filename[]="temp_users.txt";
+    FILE* temp_fp=fopen(temp_filename,"w");
+    if (temp_fp == NULL) {
+        printf("Error opening temporary file!\n");
+        fclose(fp);
+        return;
+    }
+
+    int found= 0;
+    while (fgets(line,sizeof(line),fp)) {
+        struct user stored_user;
+        if(sscanf(line,"%s %s %s %d",stored_user.id,stored_user.username,stored_user.password,stored_user.balance)!=4) {
+            fprintf(temp_fp,"%s",line);
+            continue;
+        }
+        if(strcmp(stored_user.id,user->id)==0) {
+            found= 1;
+            stored_user.balance+=amount;
+        }
+        fprintf(temp_fp,"%s %s %s %d \n",stored_user.id,stored_user.username,stored_user.password,stored_user.balance);
+    }
+    fclose(fp);
+    fclose(temp_fp);
+    if(found==1) {
+        remove("users.txt");
+        rename(temp_filename,"users.txt");
+        send_echo("deposit done successfully.\n");
+    }
+    else {
+        remove(temp_filename);
+        send_echo("user not found!");
+    }
+}
+
 
 struct user* fetch_in_file(struct user* user) {
     char line[MAX_USERNAME_LENGTH + MAX_PASSWORD_LENGTH + 50];
