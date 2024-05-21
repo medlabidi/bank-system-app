@@ -106,7 +106,7 @@ struct user* displayMainMenu() {
                 break;
             case 2:
                 user=signup();
-                send_echo("Reloading file content...");
+                //send_echo("Reloading file content...");
                 break;
             default:
                 printf("Please choose one of the options (1 or 2).\n");
@@ -156,7 +156,8 @@ void deposit(struct user* user) {
     int amount;
     printf("enter the amount you want to deposit:\n");
     scanf("%d",&amount);
-    FILE* fp=fopen("users.txt","r+");
+    FILE* fp=fopen("users.txt","r");
+    //send_echo("user file opened");
     if(fp==NULL) {
         printf("error openig file!");
         return;
@@ -165,24 +166,34 @@ void deposit(struct user* user) {
     char line[MAX_LINE_LENGTH];
     char temp_filename[]="temp_users.txt";
     FILE* temp_fp=fopen(temp_filename,"w");
+    send_echo("temp file created");
     if (temp_fp == NULL) {
         printf("Error opening temporary file!\n");
         fclose(fp);
         return;
     }
+    struct user* stored_user=malloc(sizeof(struct user));
+    if (stored_user == NULL) {
+        printf("Memory allocation failed!\n");
+        fclose(fp);
+        fclose(temp_fp);
+        return;
+    }
 
     int found= 0;
     while (fgets(line,sizeof(line),fp)) {
-        struct user stored_user;
-        if(sscanf(line,"%s %s %s %d",stored_user.id,stored_user.username,stored_user.password,stored_user.balance)!=4) {
-            fprintf(temp_fp,"%s",line);
+        //send_echo("fetching users");
+        if(sscanf(line, "%19s %49s %49s %d", stored_user->id, stored_user->username, stored_user->password, &stored_user->balance) != 4) {
+            fprintf(temp_fp, "%s", line);
             continue;
         }
-        if(strcmp(stored_user.id,user->id)==0) {
+        if(strcmp(stored_user->id,user->id)==0) {
+            //send_echo("user found");
             found= 1;
-            stored_user.balance+=amount;
+            stored_user->balance+=amount;
         }
-        fprintf(temp_fp,"%s %s %s %d \n",stored_user.id,stored_user.username,stored_user.password,stored_user.balance);
+        fprintf(temp_fp, "%s %s %s %d\n", stored_user->id, stored_user->username, stored_user->password, stored_user->balance);
+        //send_echo("user balance updated");
     }
     fclose(fp);
     fclose(temp_fp);
@@ -195,11 +206,11 @@ void deposit(struct user* user) {
         remove(temp_filename);
         send_echo("user not found!");
     }
+    free(stored_user);
 }
 
-
 struct user* fetch_in_file(struct user* user) {
-    char line[MAX_USERNAME_LENGTH + MAX_PASSWORD_LENGTH + 50];
+    char line[MAX_LINE_LENGTH];
     struct user *stored_user = malloc(sizeof(struct user));
     if (stored_user == NULL) {
         printf("Memory allocation failed!\n");
@@ -232,6 +243,11 @@ struct user* fetch_in_file(struct user* user) {
             }
         }
     }
+
+    // Ensure the ID, username, and password are null-terminated
+    stored_user->id[MAX_ID_LENGTH - 1] = '\0';
+    stored_user->username[MAX_USERNAME_LENGTH - 1] = '\0';
+    stored_user->password[MAX_PASSWORD_LENGTH - 1] = '\0';
 
     fclose(fp);
     send_echo("User not found!");
