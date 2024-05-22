@@ -191,7 +191,15 @@ void deposit(struct user* user) {
             //send_echo("user found");
             found= 1;
             stored_user->balance+=amount;
+            // Update the user's balance in the passed user struct
+            user->balance = stored_user->balance;
         }
+
+        // Ensure the ID, username, and password are null-terminated
+        stored_user->id[MAX_ID_LENGTH - 1] = '\0';
+        stored_user->username[MAX_USERNAME_LENGTH - 1] = '\0';
+        stored_user->password[MAX_PASSWORD_LENGTH - 1] = '\0';
+
         fprintf(temp_fp, "%s %s %s %d\n", stored_user->id, stored_user->username, stored_user->password, stored_user->balance);
         //send_echo("user balance updated");
     }
@@ -208,6 +216,102 @@ void deposit(struct user* user) {
     }
     free(stored_user);
 }
+
+void TransferMoney(struct user* sender) {
+    int amount=0;
+    struct user receiver;
+    char line[MAX_LINE_LENGTH];
+    int sender_found=0;
+    FILE* fp=fopen("users.txt", "r");
+    //send_echo("user file opened");
+    if(fp==NULL) {
+        printf("error openig file!");
+        return;
+    }
+
+    char temp_filename[]="temp_users.txt";
+    FILE* temp_fp=fopen(temp_filename,"w");
+    if(temp_fp==NULL) {
+        printf("error openeing temporary users file!");
+        return;
+    }
+
+    struct user* stored_user=malloc(sizeof(struct user));
+    if (stored_user == NULL) {
+        printf("Memory allocation failed!\n");
+        fclose(fp);
+        fclose(temp_fp);
+        return;
+    }
+
+    printf("select the user you want to send:\n");
+    scanf("%s",receiver.username);
+    printf("select the amount you want to send:\n");
+    scanf("%d",amount);
+
+    if(fetch_in_file(&receiver)!=NULL) {
+        /*substract the amount from the sender*/
+        while(fgets(line,sizeof(line),fp)) {
+            if(sscanf(line, "%19s %49s %49s %d", stored_user->id, stored_user->username, stored_user->password, &stored_user->balance) != 4) {
+                fprintf(temp_fp, "%s", line);
+                continue;
+            }
+            if(strcmp(stored_user->username,sender->username)==0) {
+                stored_user->balance-=amount;
+                sender_found=1;
+            }
+            // Ensure the ID, username, and password are null-terminated
+            stored_user->id[MAX_ID_LENGTH - 1] = '\0';
+            stored_user->username[MAX_USERNAME_LENGTH - 1] = '\0';
+            stored_user->password[MAX_PASSWORD_LENGTH - 1] = '\0';
+
+            fprintf(temp_fp, "%s %s %s %d\n", stored_user->id, stored_user->username, stored_user->password, stored_user->balance);
+            //send_echo("user balance updated");
+        }
+        stored_user=NULL;
+        //erase the content of the file users.txt
+        fclose(fp);
+        fclose(temp_fp);
+        FILE* fp_new=fopen("users.txt","w");
+        if (fp_new != NULL) {
+            // Successfully opened the file in "w" mode, which erases its content.
+            fclose(fp_new);
+        } else {
+            // Handle error in reopening the file
+            perror("Error reopening file in write mode");
+        }
+        FILE* temp_fp_new=fopen(temp_filename,"r");
+        if (temp_fp_new != NULL) {
+            // Successfully opened the file in "w" mode, which erases its content.
+            fclose(temp_fp_new);
+        } else {
+            // Handle error in reopening the file
+            perror("Error reopening file in write mode");
+        }
+
+        /*add the amount to the receiver*/
+        while (fgets(line,sizeof(line),temp_fp)) {
+            if(sscanf(line, "%19s %49s %49s %d", stored_user->id, stored_user->username, stored_user->password, &stored_user->balance) != 4) {
+                fprintf(fp_new, "%s", line);
+                continue;
+            }
+            if(strcmp(stored_user->username,receiver.username)==0) {
+                stored_user->balance+=amount;
+            }
+            // Ensure the ID, username, and password are null-terminated
+            stored_user->id[MAX_ID_LENGTH - 1] = '\0';
+            stored_user->username[MAX_USERNAME_LENGTH - 1] = '\0';
+            stored_user->password[MAX_PASSWORD_LENGTH - 1] = '\0';
+
+            fprintf(fp_new, "%s %s %s %d\n", stored_user->id, stored_user->username, stored_user->password, stored_user->balance);
+        }
+        fclose(temp_fp_new);
+        fclose(fp_new);
+        free(stored_user);
+        remove(temp_filename);
+    }
+}
+
 
 struct user* fetch_in_file(struct user* user) {
     char line[MAX_LINE_LENGTH];
