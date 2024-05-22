@@ -6,6 +6,7 @@
 typedef enum {
     LOG_IN_AS_USER = 1 << 0,  // 1 in binary
     LOG_IN_AS_ADMIN = 1 << 1,  // 2 in binary
+    LOG_OUT = 1 << 2            // 3 in binary
     // Other flags can be defined here
 } logintypes;
 int login_types=0; //initalize the login user flags

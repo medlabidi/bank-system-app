@@ -133,15 +133,16 @@ void DisplayUserOptionsMenu(struct user* user) {
                 TransferMoney(user);
                 break;
             case 3:
-                send_echo("Deposit");
+                //send_echo("Deposit");
                 deposit(user);
                 break;
             case 4:
-                send_echo("Withdraw");
+                //send_echo("Withdraw");
                 withdraw(user);
                 break;
             case 5:
                 send_echo("Logout");
+                logout(user);
                 break;
             default:
                 printf("Please choose one of the options.\n");
@@ -314,8 +315,13 @@ void TransferMoney(struct user* sender) {
 
     printf("select the user you want to send:\n");
     scanf("%s",receiver.username);
-    printf("select the amount you want to send:\n");
-    scanf("%d",&amount);
+    while(amount<=0){
+        printf("select the amount you want to send:\n");
+        scanf("%d",&amount);
+        if(amount<0) {
+            printf("invalid, please choose positive number.\n");
+        }
+    }
 
     while(fgets(line,sizeof(line),fp)) {
         //send_echo("fetching users..\n");
@@ -369,6 +375,14 @@ void TransferMoney(struct user* sender) {
         }
         remove(temp_filename);
     }
+}
+
+void logout(struct user* user) {
+    if(user!=NULL) {
+        free(user);
+    }
+    clear_flag(&login_types,LOG_IN_AS_USER);
+    set_flag(&login_types,LOG_OUT);
 }
 
 struct user* fetch_in_file(struct user* user) {
@@ -446,8 +460,7 @@ struct user* signup() {
         set_flag(&signup_flag, SIGNUP_DONE);
         return new_user;
     }
-    else {
-        printf("This username exists! Try another one or login.\n");
-    }
+    printf("This username exists! Try another one or login.\n");
+
     //free(new_user);
 }
