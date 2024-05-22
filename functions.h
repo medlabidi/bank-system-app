@@ -42,7 +42,7 @@ void DisplayUserOptionsMenu();
 void CheckBalance(struct user* user);
 void TransferMoney(struct user* sender);
 void deposit(struct user*);
-void withdraw(struct user*,int amount);
+void withdraw(struct user*);
 void logout();
 
 #endif /*FUNCTION_H*/

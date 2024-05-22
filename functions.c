@@ -138,6 +138,7 @@ void DisplayUserOptionsMenu(struct user* user) {
                 break;
             case 4:
                 send_echo("Withdraw");
+                withdraw(user);
                 break;
             case 5:
                 send_echo("Logout");
@@ -167,7 +168,7 @@ void deposit(struct user* user) {
     char line[MAX_LINE_LENGTH];
     char temp_filename[]="temp_users.txt";
     FILE* temp_fp=fopen(temp_filename,"w");
-    send_echo("temp file created");
+    //send_echo("temp file created");
     if (temp_fp == NULL) {
         printf("Error opening temporary file!\n");
         fclose(fp);
@@ -210,6 +211,71 @@ void deposit(struct user* user) {
         remove("users.txt");
         rename(temp_filename,"users.txt");
         send_echo("deposit done successfully.\n");
+    }
+    else {
+        remove(temp_filename);
+        send_echo("user not found!");
+    }
+    free(stored_user);
+}
+
+void withdraw(struct user* user) {
+    int amount;
+    printf("enter the amount you want to withdraw:\n");
+    scanf("%d",&amount);
+    FILE* fp=fopen("users.txt","r");
+    //send_echo("user file opened");
+    if(fp==NULL) {
+        printf("error openig file!");
+        return;
+    }
+
+    char line[MAX_LINE_LENGTH];
+    char temp_filename[]="temp_users.txt";
+    FILE* temp_fp=fopen(temp_filename,"w");
+    //send_echo("temp file created");
+    if (temp_fp == NULL) {
+        printf("Error opening temporary file!\n");
+        fclose(fp);
+        return;
+    }
+    struct user* stored_user=malloc(sizeof(struct user));
+    if (stored_user == NULL) {
+        printf("Memory allocation failed!\n");
+        fclose(fp);
+        fclose(temp_fp);
+        return;
+    }
+
+    int found= 0;
+    while (fgets(line,sizeof(line),fp)) {
+        //send_echo("fetching users");
+        if(sscanf(line, "%19s %49s %49s %d", stored_user->id, stored_user->username, stored_user->password, &stored_user->balance) != 4) {
+            fprintf(temp_fp, "%s", line);
+            continue;
+        }
+        if(strcmp(stored_user->id,user->id)==0) {
+            //send_echo("user found");
+            found= 1;
+            stored_user->balance-=amount;
+            // Update the user's balance in the passed user struct
+            user->balance = stored_user->balance;
+        }
+
+        // Ensure the ID, username, and password are null-terminated
+        stored_user->id[MAX_ID_LENGTH - 1] = '\0';
+        stored_user->username[MAX_USERNAME_LENGTH - 1] = '\0';
+        stored_user->password[MAX_PASSWORD_LENGTH - 1] = '\0';
+
+        fprintf(temp_fp, "%s %s %s %d\n", stored_user->id, stored_user->username, stored_user->password, stored_user->balance);
+        //send_echo("user balance updated");
+    }
+    fclose(fp);
+    fclose(temp_fp);
+    if(found==1) {
+        remove("users.txt");
+        rename(temp_filename,"users.txt");
+        send_echo("withdraw done.\n");
     }
     else {
         remove(temp_filename);
